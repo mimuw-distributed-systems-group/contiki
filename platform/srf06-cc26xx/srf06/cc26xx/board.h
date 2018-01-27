@@ -87,10 +87,10 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_LED_1          IOID_25
-#define BOARD_IOID_LED_2          IOID_27
-#define BOARD_IOID_LED_3          IOID_7
-#define BOARD_IOID_LED_4          IOID_6
+#define BOARD_IOID_LED_1          IOID_20
+#define BOARD_IOID_LED_2          IOID_13
+#define BOARD_IOID_LED_3          IOID_14
+#define BOARD_IOID_LED_4          IOID_20
 #define BOARD_LED_1               (1 << BOARD_IOID_LED_1)
 #define BOARD_LED_2               (1 << BOARD_IOID_LED_2)
 #define BOARD_LED_3               (1 << BOARD_IOID_LED_3)
@@ -107,8 +107,8 @@
  */
 #define BOARD_IOID_UART_RX        IOID_2
 #define BOARD_IOID_UART_TX        IOID_3
-#define BOARD_IOID_UART_CTS       IOID_UNUSED
-#define BOARD_IOID_UART_RTS       IOID_UNUSED
+#define BOARD_IOID_UART_CTS       IOID_9
+#define BOARD_IOID_UART_RTS       IOID_8
 #define BOARD_UART_RX             (1 << BOARD_IOID_UART_RX)
 #define BOARD_UART_TX             (1 << BOARD_IOID_UART_TX)
 #define BOARD_UART_CTS            (1 << BOARD_IOID_UART_CTS)
@@ -121,10 +121,10 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_KEY_LEFT       IOID_15
-#define BOARD_IOID_KEY_RIGHT      IOID_18
-#define BOARD_IOID_KEY_UP         IOID_19
-#define BOARD_IOID_KEY_DOWN       IOID_12
+#define BOARD_IOID_KEY_LEFT       IOID_UNUSED
+#define BOARD_IOID_KEY_RIGHT      IOID_UNUSED
+#define BOARD_IOID_KEY_UP         IOID_UNUSED
+#define BOARD_IOID_KEY_DOWN       IOID_UNUSED
 #define BOARD_IOID_KEY_SELECT     IOID_11
 #define BOARD_KEY_LEFT            (1 << BOARD_IOID_KEY_LEFT)
 #define BOARD_KEY_RIGHT           (1 << BOARD_IOID_KEY_RIGHT)
@@ -139,7 +139,7 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_3V3_EN         IOID_13
+#define BOARD_IOID_3V3_EN         IOID_UNUSED
 #define BOARD_3V3_EN              (1 << BOARD_IOID_3V3_EN)
 /** @} */
 /*---------------------------------------------------------------------------*/
@@ -149,9 +149,9 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_SPI_SCK        IOID_10
-#define BOARD_IOID_SPI_MOSI       IOID_9
-#define BOARD_IOID_SPI_MISO       IOID_8
+#define BOARD_IOID_SPI_SCK        IOID_UNUSED
+#define BOARD_IOID_SPI_MOSI       IOID_UNUSED
+#define BOARD_IOID_SPI_MISO       IOID_UNUSED
 #define BOARD_SPI_SCK             (1 << BOARD_IOID_SPI_SCK)
 #define BOARD_SPI_MOSI            (1 << BOARD_IOID_SPI_MOSI)
 #define BOARD_SPI_MISO            (1 << BOARD_IOID_SPI_MISO)
@@ -163,9 +163,9 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_LCD_MODE       IOID_4
-#define BOARD_IOID_LCD_RST        IOID_5
-#define BOARD_IOID_LCD_CS         IOID_14
+#define BOARD_IOID_LCD_MODE       IOID_UNUSED
+#define BOARD_IOID_LCD_RST        IOID_UNUSED
+#define BOARD_IOID_LCD_CS         IOID_UNUSED
 #define BOARD_IOID_LCD_SCK        BOARD_IOID_SPI_SCK
 #define BOARD_IOID_LCD_MOSI       BOARD_IOID_SPI_MOSI
 #define BOARD_LCD_MODE            (1 << BOARD_IOID_LCD_MODE)
@@ -181,7 +181,7 @@
  * Those values are not meant to be modified by the user
  * @{
  */
-#define BOARD_IOID_SDCARD_CS      IOID_30
+#define BOARD_IOID_SDCARD_CS      IOID_UNUSED
 #define BOARD_SDCARD_CS           (1 << BOARD_IOID_SDCARD_CS)
 #define BOARD_IOID_SDCARD_SCK     BOARD_IOID_SPI_SCK
 #define BOARD_SDCARD_SCK          BOARD_SPI_SCK
@@ -238,7 +238,7 @@
  */
 #if ROM_BOOTLOADER_ENABLE
 #define SET_CCFG_BL_CONFIG_BOOTLOADER_ENABLE            0xC5
-#define SET_CCFG_BL_CONFIG_BL_LEVEL                     0x00
+#define SET_CCFG_BL_CONFIG_BL_LEVEL                     0x0
 #define SET_CCFG_BL_CONFIG_BL_PIN_NUMBER                BOARD_IOID_KEY_SELECT
 #define SET_CCFG_BL_CONFIG_BL_ENABLE                    0xC5
 #else
