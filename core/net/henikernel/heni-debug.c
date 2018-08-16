@@ -14,7 +14,7 @@ void heniFatalCrash()
     uint *p = 0;
     printf("Terminating due to HENI's fatal error...\n\n");
     printf("%d\n", *p);
-    // exit(-1);
+    while(1) {}
 }
 
 

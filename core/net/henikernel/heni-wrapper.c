@@ -132,7 +132,7 @@ int_fast8_t heniKernelFrameSendStart(
 
     payloadLen = heniIOBufListGetCapacity(fpld);
 
-    if (payloadLen > PACKETBUF_SIZE) {
+    if (payloadLen > PACKETBUF_SIZE || payloadLen > MAX_MESSAGE_SIZE) {
       PRINTF("Payload too big\n");
       return -1;
     }
