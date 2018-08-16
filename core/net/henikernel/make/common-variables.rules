@@ -1,0 +1,107 @@
+#
+# HENI: Hierarchical Embedded Network Infrastructure
+#
+# Copyright (c) 2016, University of Warsaw
+# All rights reserved.
+#
+
+# @file
+# HENI: Common variable rules for the make file.
+
+ifeq ($(HENI_PLATFORM_NAME),)
+$(error HENI_PLATFORM_NAME is undefined!)
+endif
+
+HENI_INC_DIR := include
+HENI_INC_DETAIL_DIR := $(HENI_INC_DIR)/detail
+HENI_SRC_DIR := src
+HENI_OBJ_DIR := obj/$(HENI_PLATFORM_NAME)
+HENI_BIN_DIR := target/$(HENI_PLATFORM_NAME)
+HENI_UT_SRC_DIR_COMMON := unittest/common
+HENI_UT_SRC_DIR_PLATFORM := unittest/$(HENI_PLATFORM_NAME)
+HENI_UT_OBJ_DIR := obj/$(HENI_PLATFORM_NAME)/unittest
+HENI_UT_BIN_DIR := target/$(HENI_PLATFORM_NAME)/unittest
+
+HENI_SRC_C_FILES_WITH_COMMON_LIBRARY_CODE := \
+	$(HENI_SRC_DIR)/HENIFrame.c \
+	$(HENI_SRC_DIR)/HENIKernel.c \
+	$(HENI_SRC_DIR)/HENILabel.c \
+	$(HENI_SRC_DIR)/HENILinkedList.c \
+	$(HENI_SRC_DIR)/HENINeighborTable.c \
+	$(HENI_SRC_DIR)/HENIPacket.c \
+	$(HENI_SRC_DIR)/HENIScheduler.c \
+	$(HENI_SRC_DIR)/HENIVectoredIO.c \
+	$(HENI_SRC_DIR)/HENIZoneTable.c \
+
+
+HENI_SRC_H_FILES_WITH_COMMON_LIBRARY_HEADERS := \
+	$(HENI_INC_DIR)/HENIBase.h \
+	$(HENI_INC_DIR)/HENIDebug.h \
+	$(HENI_INC_DIR)/HENIError.h \
+	$(HENI_INC_DIR)/HENIFrame.h \
+	$(HENI_INC_DIR)/HENIKernel.h \
+	$(HENI_INC_DIR)/HENILinkAddress.h \
+	$(HENI_INC_DIR)/HENILinkedList.h \
+	$(HENI_INC_DIR)/HENINeighbor.h \
+	$(HENI_INC_DIR)/HENINeighborTable.h \
+	$(HENI_INC_DIR)/HENIPacket.h \
+	$(HENI_INC_DIR)/HENIScheduler.h \
+	$(HENI_INC_DIR)/HENIVectoredIO.h \
+	$(HENI_INC_DIR)/HENIZone.h \
+	$(HENI_INC_DIR)/HENIZoneTable.h \
+
+
+
+HENI_SRC_H_FILES_WITH_COMMON_LIBRARY_INLINES := \
+	$(HENI_INC_DETAIL_DIR)/HENIBaseDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIFrameDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIKernelDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENILabelDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENILinkedListDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENINeighborDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENINeighborTableDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIPacketDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENISchedulerDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIVectoredIODetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIZoneDetail.h \
+	$(HENI_INC_DETAIL_DIR)/HENIZoneTableDetail.h \
+
+
+
+HENI_OBJ_FILES_WITH_COMMON_LIBRARY_CODE := \
+	$(subst .c,.o,$(HENI_SRC_C_FILES_WITH_COMMON_LIBRARY_CODE))
+HENI_OBJ_FILES_WITH_COMMON_LIBRARY_CODE := \
+	$(subst $(HENI_SRC_DIR),$(HENI_OBJ_DIR),$(HENI_OBJ_FILES_WITH_COMMON_LIBRARY_CODE))
+
+HENI_LIBRARY_C_FILE := \
+	$(HENI_OBJ_DIR)/libheni.c
+HENI_LIBRARY_OBJ_FILE := \
+	$(subst .c,.o,$(HENI_LIBRARY_C_FILE))
+
+HENI_TARGET_LIBRARY_OBJ_FILE := \
+	$(subst $(HENI_OBJ_DIR),$(HENI_BIN_DIR),$(HENI_LIBRARY_OBJ_FILE))
+HENI_TARGET_LIBRARY := \
+	$(HENI_TARGET_LIBRARY_OBJ_FILE)
+
+HENI_ALL_HEADERS := \
+	$(HENI_SRC_H_FILES_WITH_COMMON_LIBRARY_HEADERS) \
+	$(HENI_SRC_H_FILES_WITH_COMMON_LIBRARY_INLINES)
+
+HENI_ALL_SOURCES := \
+	$(HENI_SRC_C_FILES_WITH_COMMON_LIBRARY_CODE) \
+	$(HENI_ALL_HEADERS)
+
+HENI_CLEAN_FILES += \
+	$(HENI_TARGET_LIBRARY) \
+    $(HENI_LIBRARY_C_FILE) \
+    $(HENI_LIBRARY_OBJ_FILE) \
+	$(HENI_OBJ_FILES_WITH_COMMON_LIBRARY_CODE) \
+	*.gcov
+
+
+HENI_CC_FLAGS += -I$(HENI_INC_DIR)
+
+
+all: $(HENI_PRE_BUILD) $(HENI_TARGET_LIBRARY) $(HENI_POST_BUILD)
+
+

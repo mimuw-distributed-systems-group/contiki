@@ -1,0 +1,130 @@
+#
+# HENI: Hierarchical Embedded Network Infrastructure
+#
+# Copyright (c) 2016, University of Warsaw
+# All rights reserved.
+#
+
+# @file
+# HENI: The make rules for the native-gcc platform.
+
+HENI_CC := arm-none-eabi-gcc
+HENI_LD := arm-none-eabi-gcc
+HENI_RM := rm -f
+HENI_CP := cp
+HENI_CAT := cat
+HENI_ECHO := echo
+
+HENI_CC_FLAGS := -c
+
+ifeq ($(DEBUG),)
+HENI_CC_FLAGS += -O3 -Wall -Werror
+HENI_LD_FLAGS += -O3 -Wall -Werror
+else
+HENI_CC_FLAGS += -DHENI_DEBUG
+HENI_CC_FLAGS += -g -Wall -Werror -O0 -fno-inline -fno-inline-small-functions -rdynamic -fprofile-arcs -ftest-coverage
+HENI_LD_FLAGS += -g -Wall -Werror -O0 -fno-inline -fno-inline-small-functions -rdynamic -fprofile-arcs -ftest-coverage
+endif
+
+# --------------------------- Standard variables ---------------------------
+
+include make/common-variables.rules
+
+
+
+# --------------------------- Unit-testing rules ---------------------------
+
+
+HENI_TARGET_UTS := \
+	$(HENI_UT_BIN_DIR)/utLinkedList.exe \
+	$(HENI_UT_BIN_DIR)/utNeighborTable.exe \
+	$(HENI_UT_BIN_DIR)/utZoneTable.exe \
+	$(HENI_UT_BIN_DIR)/utVectoredIO.exe
+HENI_TARGET_UT_NAMES := $(subst $(HENI_UT_BIN_DIR)/ut,,$(HENI_TARGET_UTS))
+HENI_TARGET_UT_NAMES := $(subst .exe,,$(HENI_TARGET_UT_NAMES))
+
+HENI_UT_OBJ_FILES_BASE := $(subst .c,.o,$(HENI_SRC_C_FILES_WITH_COMMON_LIBRARY_CODE))
+HENI_UT_OBJ_FILES_BASE := $(subst $(HENI_SRC_DIR),$(HENI_UT_OBJ_DIR),$(HENI_UT_OBJ_FILES_BASE))
+HENI_UT_OBJ_FILES_COMMON := \
+	$(HENI_UT_OBJ_DIR)/HENIUnitTestPlatform.o
+
+HENI_UT_GCOV_FILES = \
+	$(subst .o,.gcda,$(HENI_LIBRARY_OBJ_FILE)) \
+	$(subst .o,.gcno,$(HENI_LIBRARY_OBJ_FILE)) \
+	$(subst .o,.gcda,$(HENI_UT_OBJ_FILES_BASE)) \
+	$(subst .o,.gcno,$(HENI_UT_OBJ_FILES_BASE)) \
+	$(subst .o,.gcda,$(HENI_UT_OBJ_FILES_COMMON)) \
+	$(subst .o,.gcno,$(HENI_UT_OBJ_FILES_COMMON)) \
+	$(subst .o,.gcda,$(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o) \
+	$(subst .o,.gcno,$(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o)
+
+HENI_CLEAN_FILES += \
+	$(HENI_UT_OBJ_FILES_BASE) \
+	$(HENI_UT_OBJ_FILES_COMMON) \
+	$(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o \
+	$(HENI_UT_GCOV_FILES) \
+	ut*.log
+
+define HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL
+#$(HENI_UT_BIN_DIR)/ut$(1).exe: $(HENI_UT_OBJ_DIR)/HENITest$(1).o $(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o $(HENI_UT_OBJ_FILES_BASE) $(HENI_UT_OBJ_FILES_COMMON)
+$(HENI_UT_BIN_DIR)/ut$(1).exe: $(HENI_UT_OBJ_DIR)/HENITest$(1).o $(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o $2 $3 $4 $5 $6 $7 $8 $9 $(HENI_UT_OBJ_FILES_COMMON)
+	$(HENI_LD) $(HENI_LD_FLAGS) -o $$@ $$^
+
+$(HENI_UT_OBJ_DIR)/HENITest$(1).o: $(HENI_UT_SRC_DIR_COMMON)/HENITest$(1).c $(HENI_ALL_HEADERS)
+	$(HENI_CC) $(HENI_CC_FLAGS) -I$(HENI_UT_SRC_DIR_COMMON) -I$(HENI_UT_SRC_DIR_PLATFORM) -o $$@ $$<
+
+HENI_CLEAN_FILES += \
+	$(HENI_UT_BIN_DIR)/ut$(1).exe \
+	$(HENI_UT_OBJ_DIR)/HENITest$(1).o \
+	$(HENI_UT_OBJ_DIR)/HENITest$(1).gcda \
+	$(HENI_UT_OBJ_DIR)/HENITest$(1).gcno
+
+endef
+
+define HENI_COMMON_STUB_RULE
+$(HENI_UT_OBJ_DIR)/HENICommonStub$(1).o: $(HENI_UT_SRC_DIR_COMMON)/HENICommonStub$(1).c $(HENI_UT_SRC_DIR_COMMON)/HENICommonStub$(1).h $(HENI_ALL_HEADERS)
+	$(HENI_CC) $(HENI_CC_FLAGS) -I$(HENI_UT_SRC_DIR_COMMON) -I$(HENI_UT_SRC_DIR_PLATFORM) -o $$@ $$<
+
+endef
+
+
+
+utrun: utbuild FORCE
+	$(foreach t,$(HENI_TARGET_UT_NAMES),./$(HENI_UT_BIN_DIR)/ut$(t).exe 2>&1 >ut$(t).log;)
+
+utbuild: $(HENI_UT_OBJ_FILES_BASE) $(HENI_UT_OBJ_FILES_COMMON) $(HENI_TARGET_UTS)
+
+
+
+# $(foreach t,$(HENI_TARGET_UT_NAMES),$(eval $(call HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL,$(t))))
+
+$(eval $(call HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL,LinkedList,$(HENI_UT_OBJ_DIR)/HENILinkedList.o))
+
+$(eval $(call HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL,NeighborTable,$(HENI_UT_OBJ_DIR)/HENINeighborTable.o,$(HENI_UT_OBJ_DIR)/HENILinkedList.o,$(HENI_UT_OBJ_DIR)/HENICommonStubLinkAddress.o))
+
+$(eval $(call HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL,ZoneTable,$(HENI_UT_OBJ_DIR)/HENIZoneTable.o,$(HENI_UT_OBJ_DIR)/HENILinkedList.o,$(HENI_UT_OBJ_DIR)/HENILabel.o))
+
+$(eval $(call HENI_UT_DEFAULT_SYNCHRONOUSLY_RUN_ALL,VectoredIO,$(HENI_UT_OBJ_DIR)/HENILinkedList.o,$(HENI_UT_OBJ_DIR)/HENIVectoredIO.o))
+
+
+
+$(eval $(call HENI_COMMON_STUB_RULE,LinkAddress))
+
+
+
+$(HENI_UT_OBJ_DIR)/HENIUnitTestMainForSynrounouslyRunAll.o: $(HENI_UT_SRC_DIR_PLATFORM)/HENIUnitTestMainForSynrounouslyRunAll.c $(HENI_ALL_HEADERS)
+	$(HENI_CC) $(HENI_CC_FLAGS) -I$(HENI_UT_SRC_DIR_COMMON) -I$(HENI_UT_SRC_DIR_PLATFORM) -o $@ $<
+
+$(HENI_UT_OBJ_DIR)/HENIUnitTestPlatform.o: $(HENI_UT_SRC_DIR_PLATFORM)/HENIUnitTestPlatform.c $(HENI_ALL_HEADERS)
+	$(HENI_CC) $(HENI_CC_FLAGS) -I$(HENI_UT_SRC_DIR_COMMON) -I$(HENI_UT_SRC_DIR_PLATFORM) -o $@ $<
+
+$(HENI_UT_OBJ_FILES_BASE): $(HENI_UT_OBJ_DIR)/%.o: $(HENI_SRC_DIR)/%.c $(HENI_ALL_HEADERS)
+	$(HENI_CC) $(HENI_CC_FLAGS) -I$(HENI_UT_SRC_DIR_COMMON) -I$(HENI_UT_SRC_DIR_PLATFORM) -o $@ $<
+
+FORCE:
+
+
+# ---------------------------- Standard rules ------------------------------
+
+include make/common-targets.rules
+

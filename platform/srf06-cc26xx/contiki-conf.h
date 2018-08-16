@@ -53,7 +53,7 @@
 #if NETSTACK_CONF_WITH_IPV6
 #define NETSTACK_CONF_NETWORK sicslowpan_driver
 #else
-#define NETSTACK_CONF_NETWORK rime_driver
+#define NETSTACK_CONF_NETWORK heni_driver
 #endif /* NETSTACK_CONF_WITH_IPV6 */
 #endif /* NETSTACK_CONF_NETWORK */
 
@@ -62,7 +62,7 @@
 #endif
 
 #ifndef NETSTACK_CONF_RDC
-#define NETSTACK_CONF_RDC     contikimac_driver
+#define NETSTACK_CONF_RDC     sicslowmac_driver
 #endif
 
 /*
@@ -309,7 +309,7 @@
  * @{
  */
 #ifndef ROM_BOOTLOADER_ENABLE
-#define ROM_BOOTLOADER_ENABLE              0
+#define ROM_BOOTLOADER_ENABLE              1
 #endif
 /** @} */
 /*---------------------------------------------------------------------------*/

@@ -1,0 +1,41 @@
+#
+# HENI: Hierarchical Embedded Network Infrastructure
+#
+# Copyright (c) 2016, University of Warsaw
+# All rights reserved.
+#
+
+# @file
+# HENI: Common target rules for the make file.
+
+ifeq ($(HENI_PLATFORM_NAME),)
+$(error HENI_PLATFORM_NAME is undefined!)
+endif
+
+
+
+define HENI_CONCAT
+	@$(HENI_ECHO) "#line 1 \"$(realpath $(1))\"" >>$(2)
+	@$(HENI_CAT) $(1) >>$(2)
+
+endef
+
+
+
+$(HENI_TARGET_LIBRARY_OBJ_FILE): $(HENI_LIBRARY_OBJ_FILE) $(HENI_LIBRARY_C_FILE) $(HENI_ALL_SOURCES)
+	$(HENI_CP) $< $@
+
+$(HENI_LIBRARY_OBJ_FILE): $(HENI_LIBRARY_C_FILE) $(HENI_ALL_SOURCES)
+	$(HENI_CC) $(HENI_CC_FLAGS) -o $@ $<
+#	$(HENI_RM) $(HENI_LIBRARY_C_FILE)
+
+$(HENI_LIBRARY_C_FILE): $(HENI_ALL_SOURCES)
+	$(HENI_RM) $@
+	@$(HENI_ECHO) "#ifndef __LIBHENI_C_GUARD__" >>$@
+	@$(HENI_ECHO) "#define __LIBHENI_C_GUARD__" >>$@
+	$(foreach f,$(HENI_SRC_C_FILES_WITH_COMMON_LIBRARY_CODE),$(call HENI_CONCAT,$(f),$@))
+	@$(HENI_ECHO) "#endif /* __LIBHENI_C_GUARD__ */" >>$@
+
+clean:
+	$(HENI_RM) $(HENI_CLEAN_FILES)
+
